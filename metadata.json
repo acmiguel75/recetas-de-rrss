@@ -1,0 +1,7 @@
+{
+  "name": "Recetario Inteligente",
+  "description": "Una aplicación minimalista estilo Apple para capturar y organizar recetas compartidas desde TikTok, Instagram y YouTube usando IA.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
