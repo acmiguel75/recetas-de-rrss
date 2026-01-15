@@ -22,7 +22,6 @@
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             background-color: rgba(255, 255, 255, 0.7);
         }
-        /* Hide scrollbars but keep functionality */
         ::-webkit-scrollbar {
             display: none;
         }
@@ -31,6 +30,10 @@
             scrollbar-width: none;
         }
     </style>
+    <script>
+      // Shim process.env for browser environments
+      window.process = window.process || { env: {} };
+    </script>
 <script type="importmap">
 {
   "imports": {

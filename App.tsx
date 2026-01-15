@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Recipe, AppView } from './types';
-import { extractRecipeFromUrl } from './services/geminiService';
-import { RecipeCard } from './components/RecipeCard';
-import { BentoGrid } from './components/BentoGrid';
+import React, { useState, useEffect } from 'react';
+import { Recipe, AppView } from './types.ts';
+import { extractRecipeFromUrl } from './services/geminiService.ts';
+import { RecipeCard } from './components/RecipeCard.tsx';
+import { BentoGrid } from './components/BentoGrid.tsx';
 
 const App: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -26,7 +26,7 @@ const App: React.FC = () => {
       if (extractedUrl) {
         handleExtract(extractedUrl);
         // Clear query params to prevent re-processing on refresh
-        window.history.replaceState({}, document.title, "/");
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
   }, []);
@@ -41,17 +41,23 @@ const App: React.FC = () => {
     setIsExtracting(true);
     setView('loading');
     
-    const recipe = await extractRecipeFromUrl(url);
-    if (recipe) {
-      setRecipes(prev => [recipe, ...prev]);
-      setActiveRecipe(recipe);
-      setView('detail');
-    } else {
-      alert("No pudimos extraer la receta. Intenta con otro link.");
+    try {
+      const recipe = await extractRecipeFromUrl(url);
+      if (recipe) {
+        setRecipes(prev => [recipe, ...prev]);
+        setActiveRecipe(recipe);
+        setView('detail');
+      } else {
+        alert("No pudimos extraer la receta. Intenta con otro link.");
+        setView('list');
+      }
+    } catch (err) {
+      console.error(err);
       setView('list');
+    } finally {
+      setIsExtracting(false);
+      setSearchUrl('');
     }
-    setIsExtracting(false);
-    setSearchUrl('');
   };
 
   const deleteRecipe = (id: string) => {
@@ -102,7 +108,7 @@ const App: React.FC = () => {
             />
             <button 
               onClick={() => handleExtract(searchUrl)}
-              disabled={!searchUrl}
+              disabled={!searchUrl || isExtracting}
               className="bg-orange-500 text-white p-3 rounded-2xl disabled:opacity-50 transition-all active:scale-90"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +141,6 @@ const App: React.FC = () => {
           </div>
         ) : (
           <div className="animate-in slide-in-from-bottom duration-500">
-            {/* Detail View Header */}
             <div className="relative -mx-4">
                <button 
                 onClick={() => setView('list')}
@@ -169,7 +174,6 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Bento Grid Info */}
             <div className="-mt-8 relative z-10">
                <BentoGrid 
                 ingredients={activeRecipe!.ingredients} 
@@ -196,7 +200,6 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Persistent Add FAB (Mobile) */}
       {view === 'list' && (
         <button 
           onClick={() => {

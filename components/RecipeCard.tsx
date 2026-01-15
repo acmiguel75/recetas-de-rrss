@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Recipe } from '../types';
+import { Recipe } from '../types.ts';
 
 interface RecipeCardProps {
   recipe: Recipe;

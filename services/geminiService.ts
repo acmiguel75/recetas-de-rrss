@@ -1,8 +1,9 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Recipe } from "../types";
+import { Recipe } from "../types.ts";
 
 export async function extractRecipeFromUrl(url: string): Promise<Recipe | null> {
+  // Create fresh instance to ensure the most up-to-date API Key is used
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   try {
@@ -41,7 +42,10 @@ export async function extractRecipeFromUrl(url: string): Promise<Recipe | null> 
       }
     });
 
-    const data = JSON.parse(response.text);
+    const text = response.text;
+    if (!text) throw new Error("Empty response from AI");
+    
+    const data = JSON.parse(text);
     return {
       ...data,
       id: crypto.randomUUID(),
