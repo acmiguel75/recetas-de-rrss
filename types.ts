@@ -10,6 +10,7 @@ export interface Recipe {
   category: string;
   createdAt: number;
   imageUrl?: string;
+  sources?: { uri: string; title: string }[];
 }
 
 export type AppView = 'list' | 'detail' | 'loading';

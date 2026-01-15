@@ -1,20 +1,16 @@
 
-// basic service worker
-const CACHE_NAME = 'smart-recetario-v1';
+const CACHE_NAME = 'recetario-v1';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(['/']);
-    })
-  );
+  self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Handle shared data
-  if (event.request.method === 'GET' && event.request.url.includes('?url=')) {
-    // Let the frontend handle the query parameters
-    event.respondWith(fetch(event.request));
+  const url = new URL(event.request.url);
+  
+  // Si es un share_target, redirigimos con los parámetros
+  if (url.pathname === '/' && (url.searchParams.has('text') || url.searchParams.has('url'))) {
+    event.respondWith(Response.redirect('/' + url.search, 303));
     return;
   }
 
